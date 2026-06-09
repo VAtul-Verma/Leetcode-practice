@@ -49,6 +49,8 @@ class main {
             int c = sc + dir[d][1];
             if (r >= 0 && c >= 0 && r <= er && c <= ec) {
                 cnt += mazesofar2(r, c, er, ec, dir, dirs, psf + dirs[d]);
+            } else {
+                break;
             }
 
         }
@@ -69,6 +71,8 @@ class main {
                 int c = sc + rad * dir[d][1];
                 if (r >= 0 && c >= 0 && r <= er && c <= ec) {
                     cnt += mazesofarmulti(r, c, er, ec, dir, dirs, psf + dirs[d] + rad);
+                } else {
+                    break;
                 }
 
             }
@@ -93,8 +97,12 @@ class main {
             int r = sr + dir[d][0];
             int c = sc + dir[d][1];
 
-            if (r >= 0 && c >= 0 && r <= er && c <= ec && visited[r][c] == 0) {
-                cnt += floodfill(r, c, er, ec, dir, dirs, psf + dirs[d], visited);
+            if (r >= 0 && c >= 0 && r <= er && c <= ec) {
+                if (visited[r][c] == 0)
+                    cnt += floodfill(r, c, er, ec, dir, dirs, psf + dirs[d], visited);
+
+            } else {
+                break;
             }
 
         }
