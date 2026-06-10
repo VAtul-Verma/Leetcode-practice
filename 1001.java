@@ -179,4 +179,49 @@ class main {
         visited[sr][sc] = 1; // unmark your place ;
         return cnt;
     }
+
+    // ====================================================Shortest Path
+    // GFG
+    // https://www.geeksforgeeks.org/problems/shortest-source-to-destination-path3544/1=====================================================================================
+    public static class pairSp {
+        int len = (int) 1e9;
+        String str = "";
+    }
+
+    public static pairSp shortestPath(int sr, int sc, int er, int ec, int[][] mat, int[][] dir, String[] dirs) {
+        if (sr == er && sc == ec) {
+            pairSp base = new pairSp();
+            base.len = 0;
+            return base;
+        }
+        pairSp ans = new pairSp();
+        mat[sr][sc] = 0; // mark the place ;
+
+        for (int d = 0; d < dir.length; d++) {
+            int r = sr + dir[d][0];
+            int c = sc + dir[d][1];
+            if (r >= 0 && c >= 0 && r <= er && c <= ec && mat[r][c] == 1) {
+                pairSp reans = shortestPath(r, c, er, ec, mat, dir, dirs);
+                if (reans.len + 1 < ans.len) {
+                    ans.len = reans.len + 1;
+                    ans.str = reans.str + dirs[d];
+                }
+            }
+        }
+
+        mat[sr][sc] = 1; // unmark the place ;
+        return ans;
+
+    }
+
+    int shortestDistance(int N, int M, int A[][], int X, int Y) {
+        int[][] dir = { { 1, 0 }, { 0, -1 }, { 0, 1 }, { -1, 0 } };
+        String[] dirs = { "D", "L", "R", "U" };
+        if (A[0][0] == 0 || A[X][Y] == 0)
+            return -1;
+        pairSp ans = shortestPath(0, 0, X, Y, A, dir, dirs);
+        return ans.len == (int) 1e9 ? -1 : ans.len;
+
+    }
+
 }
