@@ -101,8 +101,6 @@ class main {
                 if (visited[r][c] == 0)
                     cnt += floodfill(r, c, er, ec, dir, dirs, psf + dirs[d], visited);
 
-            } else {
-                break;
             }
 
         }
@@ -112,4 +110,73 @@ class main {
         return cnt;
     }
 
+    // ========================================LEETCODE 63 TLE
+    // CODE======================================================
+    public int uniquePathsWithObstacles(int[][] obstacleGrid) {
+        int m = obstacleGrid.length;
+        int n = obstacleGrid[0].length;
+        if (obstacleGrid[0][0] == 1 || obstacleGrid[m - 1][n - 1] == 1)
+            return 0;
+
+        int[][] dir = { { 0, 1 }, { 1, 0 } };
+        String[] dirs = { "h", "v" };
+        return mazepath(0, 0, m - 1, n - 1, dir, dirs, "", obstacleGrid);
+    }
+
+    public int mazepath(int sr, int sc, int er, int ec, int[][] dir, String[] dirs, String psf, int[][] obstacleGrid) {
+        if (sr == er && sc == ec) {
+            System.out.println(psf);
+            return 1;
+        }
+        int cnt = 0;
+        obstacleGrid[sr][sc] = 1;
+        for (int d = 0; d < dir.length; d++) {
+
+            int r = sr + dir[d][0];
+            int c = sc + dir[d][1];
+            if (r >= 0 && c >= 0 && r <= er && c <= ec && obstacleGrid[r][c] == 0) {
+                cnt += mazepath(r, c, er, ec, dir, dirs, psf + dirs[d], obstacleGrid);
+            }
+        }
+        obstacleGrid[sr][sc] = 0;
+        return cnt;
+    }
+
+    // =======================================================GFG Rat in a Maze
+    // https://www.geeksforgeeks.org/problems/rat-in-a-maze-problem/1===========================================================
+    public ArrayList<String> ratInMaze(int[][] maze) {
+        // code here
+        int[][] dir = { { 1, 0 }, { 0, -1 }, { 0, 1 }, { -1, 0 } };
+        String[] dirs = { "D", "L", "R", "U" };
+        int n = maze.length;
+        int m = maze[0].length;
+        if (maze[0][0] == 0 || maze[n - 1][m - 1] == 0)
+            return new ArrayList<>();
+        ArrayList<String> ans = new ArrayList<>();
+        floodfill(0, 0, n - 1, m - 1, dir, dirs, "", maze, ans);
+        return ans;
+    }
+
+    public int floodfill(int sr, int sc, int er, int ec, int[][] dir, String[] dirs, String psf,
+            int[][] visited, ArrayList<String> ans) {
+        if (sr == er && sc == ec) {
+            ans.add(psf);
+            return 1; // reached the destination now
+        }
+        int cnt = 0;
+
+        visited[sr][sc] = 0; // mark your place ;
+        for (int d = 0; d < dir.length; d++) {
+            int r = sr + dir[d][0];
+            int c = sc + dir[d][1];
+
+            if (r >= 0 && c >= 0 && r <= er && c <= ec) {
+                if (visited[r][c] == 1)
+                    cnt += floodfill(r, c, er, ec, dir, dirs, psf + dirs[d], visited, ans);
+            }
+        }
+
+        visited[sr][sc] = 1; // unmark your place ;
+        return cnt;
+    }
 }
