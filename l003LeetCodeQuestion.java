@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class l003LeetCodeQuestion {
@@ -89,6 +90,47 @@ public class l003LeetCodeQuestion {
             smallans.remove(smallans.size() - 1);
         }
         count += combinationSumHelper(coin, id + 1, tar, ans, smallans);
+        return count;
+    }
+
+    // LeetCode 40
+
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        Arrays.sort(candidates);
+        List<List<Integer>> ans = new ArrayList<>();
+        List<Integer> smallans = new ArrayList<>();
+        System.out.println(combinationSumHelper2(candidates, 0, target, ans, smallans));
+        return ans;
+    }
+
+    public static int combinationSumHelper2(int[] coin, int id, int tar, List<List<Integer>> ans,
+            List<Integer> smallans) {
+        if (tar == 0 || id == coin.length) {
+            if (tar == 0) {
+                ArrayList<Integer> base = new ArrayList<>(smallans);
+                ans.add(base);
+
+                return 1;
+            }
+            return 0;
+        }
+
+        int count = 0;
+
+        if (tar - coin[id] >= 0) {
+            smallans.add(coin[id]);
+            count += combinationSumHelper2(coin, id + 1, tar - coin[id], ans, smallans);
+            smallans.remove(smallans.size() - 1);
+
+        }
+        // skip the dublicate value in the arrya
+        int next = id + 1;
+        while (next < coin.length &&
+                coin[next] == coin[id]) {
+            next++;
+        }
+
+        count += combinationSumHelper2(coin, next, tar, ans, smallans);
         return count;
     }
 
