@@ -1,9 +1,13 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class l004Nqueen {
     public static void main(String[] args) {
         boolean[][] box = new boolean[4][4];
         // System.out.println(queenpermutation1D(box, 3, 0, ""));
         // System.out.println(queencombination2D(box, 4, 0, 0, ""));
         System.out.println(queen01(box, 4, 0, 0, ""));
+        System.out.println(queen01permutation(box, 4, 0, ""));
 
     }
 
@@ -82,7 +86,8 @@ public class l004Nqueen {
         int[][] dir = { { 0, -1 }, { -1, -1 }, { -1, 0 }, { -1, 1 } };
         int n = box.length;
         for (int d = 0; d < dir.length; d++) {
-            for (int rad = 1; rad <= n; rad++) {
+            for (int rad = 1; rad <= n; rad++) { // radious 1 se start isliye he because 0 per wo khud ko kill ka check
+                                                 // karega so
                 int x = r + rad * dir[d][0];
                 int y = c + rad * dir[d][1];
                 if (x >= 0 && y >= 0 && x < n && y < n) {
@@ -117,4 +122,120 @@ public class l004Nqueen {
         }
         return cnt;
     }
+
+    // ===========================official NQUEEN01
+    // permutation====================================================
+
+    public static boolean isSafetoPlacequeen_permutation(boolean[][] box, int r, int c) {
+        int[][] dir = { { 0, -1 }, { -1, -1 }, { -1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 }, { 1, 0 }, { 1, -1 } };
+        int n = box.length;
+        for (int d = 0; d < dir.length; d++) {
+            for (int rad = 1; rad <= n; rad++) { // radious 1 se start isliye he because 0 per wo khud ko kill ka check
+                                                 // karega so
+                int x = r + rad * dir[d][0];
+                int y = c + rad * dir[d][1];
+                if (x >= 0 && y >= 0 && x < n && y < n) {
+                    // check weather the queen is already placed or not
+                    if (box[x][y])
+                        return false;
+                } else {
+                    break;
+                }
+            }
+        }
+        return true;
+
+    }
+
+    public static int queen01permutation(boolean[][] box, int tnq, int qpsf, String psf) {
+        if (qpsf == tnq) {
+            System.out.println(psf);
+            return 1;
+        }
+        int cnt = 0;
+        int n = box.length;
+        for (int bidx = 0; bidx < n * n; bidx++) {
+            int r = bidx / n;
+            int c = bidx % n;
+            if (!box[r][c] && isSafetoPlacequeen_permutation(box, r, c)) {
+                box[r][c] = true;
+
+                cnt += queen01permutation(box, tnq, qpsf + 1, psf + "(" + r + "," + c + ") ");
+                box[r][c] = false;
+            }
+        }
+        return cnt;
+
+    }
+
+    // =============================================LeetCode
+    // 51=======================================================
+
+    public List<List<String>> solveNQueens(int n) {
+        boolean[][] arr = new boolean[n][n];
+        List<List<String>> ans = new ArrayList<>();
+        queen01(arr, n, 0, 0, "", ans);
+        return ans;
+    }
+
+    public void printAns(boolean[][] board, List<List<String>> ans) {
+        List<String> currboardpath = new ArrayList<>();
+        for (int row = 0; row < board.length; row++) {
+            String path = "";
+            for (int col = 0; col < board[0].length; col++) {
+                if (board[row][col] == false) {
+                    path += ".";
+                } else {
+                    path += "Q";
+                }
+
+            }
+            currboardpath.add(path);
+        }
+        ans.add(currboardpath);
+    }
+
+    // public boolean isSafetoPlacequeen(boolean[][] box, int r, int c) {
+    // int[][] dir = { { 0, -1 }, { -1, -1 }, { -1, 0 }, { -1, 1 } };
+    // int n = box.length;
+    // for (int d = 0; d < dir.length; d++) {
+    // for (int rad = 1; rad <= n; rad++) { // radious 1 se start isliye he because
+    // 0 per wo khud ko kill ka check
+    // // karega so
+    // int x = r + rad * dir[d][0];
+    // int y = c + rad * dir[d][1];
+    // if (x >= 0 && y >= 0 && x < n && y < n) {
+    // // check weather the queen is already placed or not
+    // if (box[x][y])
+    // return false;
+    // } else {
+    // break;
+    // }
+    // }
+    // }
+    // return true;
+
+    // }
+
+    public int queen01(boolean[][] box, int tnq, int bno, int qpsf, String psf, List<List<String>> ans) {
+        if (qpsf == tnq) {
+            printAns(box, ans);
+            System.out.println(psf);
+            return 1;
+        }
+        int cnt = 0;
+        int n = box.length;
+        for (int bidx = bno; bidx < n * n; bidx++) {
+            int r = bidx / n;
+            int c = bidx % n;
+            if (isSafetoPlacequeen(box, r, c)) {
+                box[r][c] = true;
+                cnt += queen01(box, tnq, bidx + 1, qpsf + 1, psf + "(" + r + "," + c + ") ", ans);
+                box[r][c] = false;
+
+            }
+        }
+        return cnt;
+    }
+
 }
