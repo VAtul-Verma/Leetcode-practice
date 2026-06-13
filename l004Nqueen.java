@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class l004Nqueen {
@@ -236,6 +237,100 @@ public class l004Nqueen {
             }
         }
         return cnt;
+    }
+
+    // ==================================LeetCode Sudoku solver
+    // 37================================
+
+    public boolean isPossibleToPlaceNumber(char[][] board, int r, int c, int num) {
+        // row check
+        for (int row = 0; row < 9; row++) {
+            if (board[row][c] - '0' == num)
+                return false;
+        }
+        // check in the column
+        for (int col = 0; col < 9; col++) {
+            if (board[r][col] - '0' == num)
+                return false;
+        }
+
+        // check in the 3*3 matrix
+
+        // get the start point of each 3*3 matrix
+        r = (r / 3) * 3;
+        c = (c / 3) * 3;
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                if (board[r + row][c + col] - '0' == num)
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean sudokusolver(char[][] board, ArrayList<Integer> list, int idx) {
+        if (idx == list.size()) {
+            return true;// sudoku sovle as all blank places fill;
+        }
+
+        // again decode the idx which store in the List from 1d into 2D row and column
+        int r = list.get(idx) / 9;
+        int c = list.get(idx) % 9;
+
+        // now place the number from 0-9 in that blank place
+        for (int num = 1; num <= 9; num++) {
+            if (isPossibleToPlaceNumber(board, r, c, num)) {
+                board[r][c] = (char) ('0' + num); // place the number
+                // call the next place and if sudoku solve return true
+                if (sudokusolver(board, list, idx + 1))
+                    return true;
+                board[r][c] = '.'; // mark blank again if not right solve
+
+            }
+
+        }
+        return false;
+
+    }
+
+    public void solveSudoku(char[][] board) {
+        ArrayList<Integer> list = new ArrayList<>();
+        int n = 9;// sudoku is 9*9
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[i][j] == '.') {
+                    list.add(i * n + j);// 2d to 1d conversition store the blank place in a list
+                }
+            }
+        }
+        sudokusolver(board, list, 0);
+
+    }
+
+    // ==================leetcode 139=========================
+    public boolean wordBreak(String s, List<String> wordDict) {
+        HashSet<String> set = new HashSet<>();
+        for (String str : wordDict) {
+            set.add(str);
+        }
+        return wordBreak(s, "", set);
+    }
+
+    public boolean wordBreak(String str, String asf, HashSet<String> set) {
+        if (str.length() == 0) {
+            System.out.println(asf);
+            return true;
+        }
+
+        for (int len = 1; len <= str.length(); len++) {
+            String smallstr = str.substring(0, len);
+            if (set.contains(smallstr)) {
+                if (wordBreak(str.substring(len), asf + smallstr + " ", set))
+                    return true;
+            }
+
+        }
+        return false;
     }
 
 }
