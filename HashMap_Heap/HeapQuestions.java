@@ -1,5 +1,8 @@
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.PriorityQueue;
 
 public class HeapQuestions {
@@ -176,6 +179,184 @@ public class HeapQuestions {
             ans[i++] = points[idx];
         }
         return ans;
+    }
+
+    // ==================================Leetcode 692
+    // ======================================
+    public List<String> topKFrequent(String[] words, int k) {
+        HashMap<String, Integer> map = new HashMap<>();
+        for (String s : words) {
+            map.put(s, map.getOrDefault(s, 0) + 1);
+        }
+        PriorityQueue<String> heap = new PriorityQueue<>((a, b) -> {
+
+            int fa = map.get(a);
+            int fb = map.get(b);
+            // if the frequency is same return the lexicographical order
+            if (fa == fb) {
+                return b.compareTo(a);
+            }
+            return fa - fb;
+        });
+        for (String s : map.keySet()) {
+            heap.add(s);
+            if (heap.size() > k) {
+                heap.remove();
+            }
+        }
+        List<String> ans = new LinkedList<>();
+        while (heap.size() != 0) {
+            ans.addFirst(heap.remove());
+        }
+        return ans;
+    }
+
+    // leetcode 778====================================
+    public int swimInWater(int[][] grid) {
+        int n = grid.length;
+        int m = grid[0].length;
+        int[][] dir = { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 } };
+        PriorityQueue<Integer> heap = new PriorityQueue<>((a, b) -> {
+            int i1 = a / m, j1 = a % m;
+            int i2 = b / m, j2 = b % m;
+
+            return grid[i1][j1] - grid[i2][j2];
+        });
+
+        boolean[][] vis = new boolean[n][m];
+        heap.add(0);
+        vis[0][0] = true;
+        int minheight = 0;
+        while (heap.size() != 0) {
+            int idx = heap.remove();
+            int i = idx / m;
+            int j = idx % m;
+            int height = grid[i][j];
+            minheight = Math.max(minheight, height);
+
+            if (i == n - 1 && j == m - 1)
+                break;
+
+            for (int[] d : dir) {
+                int r = i + d[0];
+                int c = j + d[1];
+                if (r >= 0 && c >= 0 && r < n && c < m && !vis[r][c]) {
+                    vis[r][c] = true;
+                    heap.add(r * m + c);
+
+                }
+            }
+        }
+        return minheight;
+    }
+
+    // ======================================Leetcode
+    // 1642=============================================
+    public int furthestBuilding(int[] heights, int bricks, int ladders) {
+        PriorityQueue<Integer> heap = new PriorityQueue<>();
+        int n = heights.length;
+        for (int i = 1; i < n; i++) {
+            int diff = heights[i] - heights[i - 1];
+            if (diff > 0)
+                heap.add(diff);
+            if (heap.size() > ladders) {
+                bricks -= heap.remove();
+            }
+            if (bricks < 0)
+                return i - 1;
+        }
+
+        return n - 1;
+    }
+
+    // ======================================LeetCode 632
+    // =========================================
+    public int[] smallestRange(List<List<Integer>> nums) {
+        int n = nums.size();
+        PriorityQueue<int[]> heap = new PriorityQueue<>((a, b) -> {
+            int r1 = a[0], c1 = a[1];
+            int r2 = b[0], c2 = b[1];
+            return nums.get(r1).get(c1) - nums.get(r2).get(c2);
+        });
+
+        int maxValue = -(int) 1e9;
+
+        for (int i = 0; i < n; i++) {
+            heap.add(new int[] { i, 0 });
+            maxValue = Math.max(maxValue, nums.get(i).get(0));
+        }
+
+        int range = (int) 1e9, sp = -1, ep = -1;
+
+        while (heap.size() == n) {
+            int[] res = heap.remove();
+            int r = res[0];
+            int c = res[1];
+            int val = nums.get(r).get(c);
+            if (maxValue - val < range) {
+                range = maxValue - val;
+                sp = val;
+                ep = maxValue;
+            }
+            c++;
+            if (c < nums.get(r).size()) {
+                heap.add(new int[] { r, c });
+                maxValue = Math.max(maxValue, nums.get(r).get(c));
+            }
+        }
+        return new int[] { sp, ep };
+    }
+
+    // leetocde 128
+    public int longestConsecutive(int[] nums) {
+        HashSet<Integer> map = new HashSet<>();
+        for (int i : nums)
+            map.add(i);
+        int len = 0;
+        for (int i : nums) {
+            if (!map.contains(i))
+                continue;
+            int prev = i - 1, next = i + 1;
+            map.remove(i);
+            while (map.contains(prev))
+                map.remove(prev--);
+            while (map.contains(next))
+                map.remove(next++);
+
+            len = Math.max(len, next - prev - 1);
+        }
+        return len;
+    }
+
+    // ==============Leetcode 781===========
+
+    public int numRabbits(int[] answers) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        int n = answers.length;
+        int ans = 0;
+        for (int ele : answers) {
+            if (!map.containsKey(ele)) {
+                ans += ele + 1;
+                map.put(ele, 1);
+            } else {
+                map.put(ele, map.get(ele) + 1);
+            }
+
+            if (map.get(ele) == ele + 1)
+                map.remove(ele);
+        }
+        return ans;
+    }
+
+    // =====================================LeetCode 1218=========================
+    public int longestSubsequence(int[] arr, int difference) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        int maxLen = 0;
+        for (int ele : arr) {
+            map.put(ele, map.getOrDefault(ele - difference, 0) + 1);
+            maxLen = Math.max(maxLen, map.get(ele));
+        }
+        return maxLen;
     }
 
 }
