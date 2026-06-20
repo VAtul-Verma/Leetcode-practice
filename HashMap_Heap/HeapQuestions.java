@@ -1,9 +1,11 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Random;
 
 public class HeapQuestions {
     public static void main(String[] args) {
@@ -357,6 +359,143 @@ public class HeapQuestions {
             maxLen = Math.max(maxLen, map.get(ele));
         }
         return maxLen;
+    }
+
+    // ========================================LeetCode 954=====
+    public boolean canReorderDoubled(int[] arr) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        int n = arr.length;
+        int k = 0;
+        Integer[] ARR = new Integer[n];
+        for (int i : arr) {
+            map.put(i, map.getOrDefault(i, 0) + 1);
+            ARR[k++] = i;
+
+        }
+        Arrays.sort(ARR, (a, b) -> {
+            return Math.abs(a) - Math.abs(b);
+        });
+
+        for (Integer ele : ARR) {
+            if (map.get(ele) == 0)
+                continue;
+            if (map.getOrDefault(2 * ele, 0) <= 0)
+                return false;
+
+            map.put(ele, map.get(ele) - 1);
+            map.put(2 * ele, map.get(2 * ele) - 1);
+
+        }
+        return true;
+    }
+
+    // =============================================LEETCODE
+    // 295======================================
+
+    private PriorityQueue<Integer> maxheap = new PriorityQueue<>((a, b) -> {
+        return b - a;
+    });
+
+    private PriorityQueue<Integer> minheap = new PriorityQueue<>();
+
+    // public MedianFinder() {
+
+    // }
+
+    public void addNum(int num) {
+        if (maxheap.size() == 0 || num <= maxheap.peek()) {
+            maxheap.add(num);
+        } else {
+            minheap.add(num);
+        }
+        if (maxheap.size() - minheap.size() == 2)
+            minheap.add(maxheap.remove());
+        if (maxheap.size() - minheap.size() == -1)
+            maxheap.add(minheap.remove());
+    }
+
+    public double findMedian() {
+        if (maxheap.size() - minheap.size() == 0) {
+            return (maxheap.peek() + minheap.peek()) / 2.0;
+        } else {
+            return maxheap.peek() * 1.0;
+        }
+    }
+
+    // =======================================LEETCODE 380=========================
+    Random r;
+    HashMap<Integer, Integer> map;
+    ArrayList<Integer> list;
+    // public RandomizedSet() {
+    // r=new Random();
+    // map=new HashMap<>();
+    // list=new ArrayList<>();
+
+    // }
+
+    public boolean insert(int val) {
+        if (map.containsKey(val)) {
+            return false;
+        }
+        list.add(val);
+        map.put(val, list.size() - 1);
+
+        return true;
+    }
+
+    public boolean remove(int val) {
+        if (!map.containsKey(val)) {
+            return false;
+        }
+        int validx = map.get(val);
+        int lastvalidx = list.size() - 1;
+        int lastval = list.get(lastvalidx);
+        list.set(validx, lastval);
+        list.set(lastvalidx, val);
+        map.put(val, lastvalidx);
+        map.put(lastval, validx);
+        list.remove(list.size() - 1);
+        map.remove(val);
+        return true;
+    }
+
+    public int getRandom() {
+        int idx = r.nextInt(list.size());
+        return list.get(idx);
+    }
+
+    // ========================================LEETCODE 149
+    // =======================================
+    public int maxPoints(int[][] points) {
+        HashMap<String, Integer> map = new HashMap<>();
+        int ans = 0, n = points.length;
+        for (int i = 0; i < n; i++) {
+            int overlap = 0, max = 0;
+            for (int j = i + 1; j < n; j++) {
+                int xdiff = points[j][0] - points[i][0];
+                int ydiff = points[j][1] - points[i][1];
+
+                int gcd = gcd(xdiff, ydiff);
+
+                xdiff /= gcd;
+                ydiff /= gcd;
+
+                String s = xdiff + "@" + ydiff;
+                map.put(s, map.getOrDefault(s, 0) + 1);
+                max = Math.max(map.get(s), max);
+            }
+
+            ans = Math.max(max + 1, ans);
+            map.clear();
+        }
+
+        return ans;
+    }
+
+    public int gcd(int a, int b) {
+        if (b == 0)
+            return a;
+        return gcd(b, a % b);
     }
 
 }
