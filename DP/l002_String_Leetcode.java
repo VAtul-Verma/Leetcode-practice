@@ -186,8 +186,8 @@ public class l002_String_Leetcode {
     }
 
     public static void main(String[] args) {
-        String s1 = "geek";
-        String s2 = "gesek";
+        String s1 = "babgbag";
+        String s2 = "bag";
 
         int n = s1.length();
         int m = s2.length();
@@ -195,7 +195,7 @@ public class l002_String_Leetcode {
         for (int[] d : dp) {
             Arrays.fill(d, -1);
         }
-        System.out.println(minDistance_memo(s1, s2, n, m, dp));
+        System.out.println(countWays_memo(s1, s2, n, m, dp));
         display2D(dp);
     }
 
