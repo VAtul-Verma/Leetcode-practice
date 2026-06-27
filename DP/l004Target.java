@@ -392,17 +392,105 @@ public class l004Target {
         }
         if (target < -sum || target > sum)
             return 0;
-        return targetsumhelper(nums, n, target);
+        return targetsumhelper_Recursion(nums, n, target);
     }
 
-    public int targetsumhelper(int[] nums, int n, int tar) {
+    public int targetsumhelper_Recursion(int[] nums, int n, int tar) {
         if (n == 0) {
             return (tar == 0) ? 1 : 0;
         }
         int cnt = 0;
-        cnt += targetsumhelper(nums, n - 1, tar - nums[n - 1]); // num is positive
-        cnt += targetsumhelper(nums, n - 1, tar - (-nums[n - 1])); // nums is negative
+        cnt += targetsumhelper_Recursion(nums, n - 1, tar - nums[n - 1]); // num is positive
+        cnt += targetsumhelper_Recursion(nums, n - 1, tar - (-nums[n - 1])); // nums is negative
         return cnt;
+
+    }
+
+    // memoization
+    public int findTargetSumWaysmemo(int[] nums, int target) {
+        int n = nums.length;
+        if (n == 0)
+            return 0;
+        int sum = 0;
+        for (int i : nums) {
+            sum += i;
+        }
+        if (target < -sum || target > sum)
+            return 0;
+        int[][] dp = new int[n + 1][2 * sum + 1];
+        for (int[] d : dp) {
+            Arrays.fill(d, -1);
+        }
+        return targetsumhelper_memo(nums, n, sum, target + sum, dp);
+    }
+
+    public int targetsumhelper_memo(int[] nums, int n, int sum, int tar, int[][] dp) {
+        if (n == 0) {
+            return dp[n][tar] = (tar == sum) ? 1 : 0;
+        }
+        if (dp[n][tar] != -1)
+            return dp[n][tar];
+        int cnt = 0;
+        if (tar - (nums[n - 1]) >= 0)
+            cnt += targetsumhelper_memo(nums, n - 1, sum, tar - nums[n - 1], dp); // num is positive
+        if (tar - (-nums[n - 1]) <= 2 * sum)
+            cnt += targetsumhelper_memo(nums, n - 1, sum, tar - (-nums[n - 1]), dp); // nums is negative
+        return dp[n][tar] = cnt;
+
+    }
+
+    // memoization more better
+    public int targetsumhelper_memobetter(int[] nums, int n, int sum, int tar, int[][] dp) {
+        if (n == 0) {
+            return dp[n][sum] = (tar == sum) ? 1 : 0;
+        }
+        if (dp[n][sum] != -1)
+            return dp[n][sum];
+        int cnt = 0;
+        cnt += targetsumhelper_memobetter(nums, n - 1, sum - nums[n - 1], tar, dp); // num is positive
+        cnt += targetsumhelper_memobetter(nums, n - 1, sum + nums[n - 1], tar, dp); // nums is negative
+        return dp[n][sum] = cnt;
+
+    }
+
+    // ============================================LEETCODE
+    // 698===============================
+    // recursion
+    public boolean canPartitionKSubsets(int[] arr, int k) {
+        int n = arr.length;
+        int maxEle = 0;
+        int sum = 0;
+        for (int ele : arr) {
+            sum += ele;
+            maxEle = Math.max(maxEle, ele);
+        }
+        if (sum % k != 0 || maxEle > sum)
+            return false;
+
+        boolean vis[] = new boolean[n];
+        return canPartitionKSubsets_recursion(arr, 0, k, 0, sum / k, vis);
+
+    }
+
+    public boolean canPartitionKSubsets_recursion(int[] arr, int idx, int k, int sumSF, int tar, boolean[] vis) {
+        if (k == 0)
+            return true;
+        if (sumSF > tar)
+            return false;
+        if (tar == sumSF) {
+            return canPartitionKSubsets_recursion(arr, 0, k - 1, 0, tar, vis);
+        }
+        boolean res = false;
+        for (int i = idx; i < arr.length; i++) {
+            if (vis[i])
+                continue;
+
+            vis[i] = true;
+            res = res || canPartitionKSubsets_recursion(arr, i, k, sumSF + arr[i], tar, vis);
+            vis[i] = false;
+
+        }
+        return res;
 
     }
 
