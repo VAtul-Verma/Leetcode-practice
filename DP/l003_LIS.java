@@ -353,6 +353,82 @@ public class l003_LIS {
         return maxLen;
     }
 
+    // ============================================LEETCODE
+    // 673====================================
+    // code
+    public int findNumberOfLIS(int[] nums) {
+        int n = nums.length;
+        int[] count = new int[n];
+        int[] dp = new int[n];// len array
+        int maxLen = 0, maxCount = 0;
+        for (int i = 0; i < n; i++) {
+            dp[i] = 1;
+            count[i] = 1;
+            for (int j = i - 1; j >= 0; j--) {
+                if (nums[j] < nums[i]) {
+                    if (dp[j] + 1 == dp[i])
+                        count[i] += count[j];
+                    else if (dp[j] + 1 > dp[i]) {
+                        dp[i] = dp[j] + 1;
+                        count[i] = count[j];
+                    }
+                }
+            }
+            if (maxLen == dp[i]) {
+                maxCount += count[i];
+            } else if (dp[i] > maxLen) {
+                maxLen = dp[i];
+                maxCount = count[i];
+            }
+        }
+        return maxCount;
+    }
+
+    // ==============================================GFG
+    // minimum-number-of-deletions-to-make-a-sorted-sequence============================================
+    // Link :
+    // https://www.geeksforgeeks.org/problems/minimum-number-of-deletions-to-make-a-sorted-sequence3248/1
+
+    public int minDeletions(int[] arr) {
+        // code here
+        int n = arr.length;
+        int dp[] = new int[n];
+        int maxlen = 0;
+        for (int i = 0; i < n; i++) {
+            dp[i] = 1;
+            for (int j = i - 1; j >= 0; j--) {
+                if (arr[j] < arr[i]) {
+                    dp[i] = Math.max(dp[j] + 1, dp[i]);
+                }
+            }
+            maxlen = Math.max(maxlen, dp[i]);
+        }
+        return n - maxlen;
+
+    }
+
+    // ==========================================================GFG Building
+    // Bridges======================================
+    // code
+    public static int BuildingBridge(int[][] arr) {
+        Arrays.sort(arr, (a, b) -> {
+            return a[0] - b[0];
+        });
+        int n = arr.length;
+        int maxLen = 0;
+        int[] dp = new int[n];
+        for (int i = 0; i < n; i++) {
+            dp[i] = 1;
+            for (int j = i - 1; j >= 0; j--) {
+                if (arr[j][1] < arr[i][1] && arr[j][0] < arr[i][0]) {
+                    dp[i] = Math.max(dp[j] + 1, dp[i]);
+                }
+            }
+            maxLen = Math.max(maxLen, dp[i]);
+        }
+        return maxLen;
+    }
+
     public static void main(String[] args) {
         int[] nums = { 3, 10, 2, 11 };
 
