@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 import javax.swing.tree.TreeNode;
 
 public class l004Construction {
@@ -135,6 +137,185 @@ public class l004Construction {
         String[] str = data.split(" ");
         return deserialize(str);
 
+    }
+
+    // =====================================================LEETCODE
+    // 110==============================================
+    // Approach 1
+    boolean isbalanced = true;
+
+    public boolean isBalanced(TreeNode root) {
+        Height(root);
+        return isbalanced;
+    }
+
+    public int Height(TreeNode root) {
+        if (root == null)
+            return 0;
+
+        int left = Height(root.left);
+        int right = Height(root.right);
+        if (Math.abs(left - right) > 1) {
+            isbalanced = false;
+        }
+        return Math.max(left, right) + 1;
+    }
+
+    // ====================================GFG largest sub-tree
+    // Link: https://www.geeksforgeeks.org/problems/largest-bst/1
+
+    // Return the size of the largest sub-tree which is also a BST
+    public static class Bpair {
+        boolean isbst = true;
+        int min = (int) 1e9;
+        int max = -(int) 1e9;
+        int size = 0;
+        Node large = null;
+    }
+
+    static Bpair largestBsthel(Node root) {
+        if (root == null) {
+            Bpair base = new Bpair();
+            return base;
+        }
+        Bpair lp = largestBsthel(root.left);
+        Bpair rp = largestBsthel(root.right);
+        Bpair mypair = new Bpair();
+        mypair.isbst = false;
+
+        if (lp.isbst && rp.isbst && lp.max < root.data && root.data < rp.min) {
+            mypair.isbst = true;
+            mypair.min = Math.min(lp.min, root.data);
+            mypair.max = Math.max(rp.max, root.data);
+            mypair.size = lp.size + rp.size + 1;
+
+        } else {
+            if (lp.size > rp.size) {
+                mypair.size = lp.size;
+            } else {
+                mypair.size = rp.size;
+            }
+        }
+        // Write your code here
+        return mypair;
+
+    }
+
+    static int largestBst(Node root) {
+        // Write your code here
+        return largestBsthel(root).size;
+
+    }
+
+    // ===============================================GFG Predecessor and Successor
+    // Link: https://www.geeksforgeeks.org/problems/predecessor-and-successor/1
+    public Node getLeftMost(Node root) {
+        if (root == null)
+            return null;
+
+        while (root.left != null) {
+            root = root.left;
+        }
+
+        return root;
+    }
+
+    public Node getRightMost(Node root) {
+        if (root == null)
+            return null;
+
+        while (root.right != null) {
+            root = root.right;
+        }
+
+        return root;
+    }
+
+    // ceil and floor -> T : O(logN), S : O(1)
+    public void predSucc(Node root, int data, ArrayList<Node> ans) {
+        Node curr = root, succ = null, pred = null;
+
+        while (curr != null) {
+            if (curr.data == data) {
+
+                Node leftMost = getLeftMost(curr.right);
+                succ = leftMost != null ? leftMost : succ;
+
+                Node rightMost = getRightMost(curr.left);
+                pred = rightMost != null ? rightMost : pred;
+
+                break;
+
+            } else if (curr.data < data) {
+                pred = curr;
+                curr = curr.right;
+            } else {
+                succ = curr;
+                curr = curr.left;
+            }
+        }
+        ans.add(pred);
+        ans.add(succ);
+    }
+
+    public ArrayList<Node> findPreSuc(Node root, int key) {
+        // code here
+        ArrayList<Node> ans = new ArrayList<>();
+        predSucc(root, key, ans);
+        return ans;
+
+    }
+
+    // ==============================================LEETCODE 701
+    // =================================================
+    public TreeNode insertIntoBST(TreeNode root, int val) {
+        if (root == null) {
+            TreeNode mynode = new TreeNode(val);
+            return mynode;
+        }
+        TreeNode nd = root;
+        if (root.val > val) {
+            nd.left = insertIntoBST(root.left, val);
+        } else {
+            nd.right = insertIntoBST(root.right, val);
+        }
+        return nd;
+    }
+
+    // =========================================LEETCODE 450
+    // ====================================================
+    // T : O(LogN)
+    public int getMin(TreeNode root) {
+
+        while (root.left != null)
+            root = root.left;
+        return root.val;
+    }
+
+    public TreeNode deleteNode(TreeNode root, int key) {
+        if (root == null)
+            return null;
+
+        if (root.val < key)
+            root.right = deleteNode(root.right, key);
+        else if (root.val > key)
+            root.left = deleteNode(root.left, key);
+        else {
+            if (root.left == null || root.right == null) {
+                TreeNode rNode = root.left != null ? root.left : root.right;
+                root.left = root.right = null;
+                // delete root;
+                return rNode;
+            }
+
+            int minEle = getMin(root.right);
+            root.val = minEle;
+
+            root.right = deleteNode(root.right, minEle);
+
+        }
+
+        return root;
     }
 
     public static void main(String[] args) {
