@@ -311,7 +311,7 @@ public class l004Construction {
             int minEle = getMin(root.right);
             root.val = minEle;
 
-            root.right = deleteNode(root.right, minEle);
+            root.left = deleteNode(root.right, minEle);
 
         }
 
