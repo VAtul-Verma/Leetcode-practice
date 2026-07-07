@@ -137,8 +137,86 @@ public class l006DIA {
 
     // ================================================LEETCODE
     // 124============================================
+    public int max(int... arr) {
+        int max = arr[0];
+        for (int ele : arr)
+            max = Math.max(max, ele);
+
+        return max;
+    }
+
+    int NodeToNodeMaxPathSum = -(int) 1e9;
+
+    public int maxPathSum_(TreeNode root) {
+        if (root == null)
+            return 0;
+
+        int lrtn = maxPathSum_(root.left); // left root To Node
+        int rrtn = maxPathSum_(root.right); // right root To Node
+
+        int rootToNode = Math.max(lrtn, rrtn) + root.val;
+        NodeToNodeMaxPathSum = max(NodeToNodeMaxPathSum, rootToNode, root.val, lrtn + root.val + rrtn);
+
+        return max(rootToNode, root.val);
+    }
+
     public int maxPathSum(TreeNode root) {
-        return 0;
+        maxPathSum_(root);
+        return NodeToNodeMaxPathSum;
+    }
+
+    // =============================================================LEETCODE
+    // 99==========================================
+    public TreeNode getmostright(TreeNode node, TreeNode curr) {
+        while (node.right != null && node.right != curr) {
+            node = node.right;
+        }
+        return node;
+    }
+
+    // Simple moris traversal
+    public void recoverTree(TreeNode root) {
+        // using morris traversal;
+        TreeNode curr = root, prev = null, a = null, b = null;
+        while (curr != null) {
+            TreeNode left = curr.left;
+            if (left == null) {
+                if (prev != null && prev.val > curr.val) {
+                    if (a == null) {
+                        a = prev;
+                        b = curr;
+                    } else {
+                        b = curr;
+                    }
+                }
+                prev = curr;
+                curr = curr.right;
+            } else {
+                TreeNode rmost = getmostright(left, curr);
+                if (rmost.right == null) {
+                    rmost.right = curr;
+                    curr = curr.left;
+                } else {
+                    rmost.right = null;
+                    if (prev != null && prev.val > curr.val) {
+                        if (a == null) {
+                            a = prev;
+                            b = curr;
+                        } else {
+                            b = curr;
+                        }
+                    }
+                    prev = curr;
+                    curr = curr.right;
+                }
+            }
+        }
+        if (a != null) {
+            int temp = a.val;
+            a.val = b.val;
+            b.val = temp;
+        }
+
     }
 
 }
