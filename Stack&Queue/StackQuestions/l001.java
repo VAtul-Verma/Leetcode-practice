@@ -2,7 +2,9 @@ package StackQuestions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.PriorityQueue;
 
 import javax.swing.event.ListDataEvent;
 
@@ -399,7 +401,7 @@ public class l001 {
     }
 
     // =============================================LEETCODE
-    // 316==============================================
+    // 316 , 1081==============================================
     public String removeDuplicateLetters(String s) {
         int n = s.length();
         StringBuilder st = new StringBuilder();
@@ -427,4 +429,173 @@ public class l001 {
         return st.toString();
     }
 
+    // =============================================LEETCODE
+    // 1249============================================
+    public String minRemoveToMakeValid(String s) {
+        int n = s.length();
+        LinkedList<Integer> st = new LinkedList<>();
+        char[] character = s.toCharArray();
+        for (int i = 0; i < n; i++) {
+            char ch = s.charAt(i);
+            if (ch == ')') {
+                if (st.size() != 0) {
+                    st.removeFirst();
+                } else {
+                    character[i] = '#';
+                }
+            } else if (ch == '(') {
+                st.addFirst(i);
+            }
+        }
+
+        while (st.size() != 0) {
+            character[st.removeFirst()] = '#';
+        }
+        StringBuilder sb = new StringBuilder();
+        for (char ch : character) {
+            if (ch != '#')
+                sb.append(ch);
+        }
+        return sb.toString();
+
+    }
+
+    // ======================================================HOME WORK ===LEETCODE
+    // 921=======================================
+
+    // =============================================LEETCODE
+    // 895===========================================
+    class FreqStack {
+        private class pair implements Comparable<pair> {
+            int val = 0;
+            int idx = 0;
+            int freq = 0;
+
+            pair(int val, int idx, int freq) {
+                this.val = val;
+                this.idx = idx;
+                this.freq = freq;
+            }
+
+            public int compareTo(pair o) {
+                if (this.freq == o.freq)
+                    return o.idx - this.idx;
+                else
+                    return o.freq - this.freq;
+
+            }
+        }
+
+        private PriorityQueue<pair> pq;
+        private HashMap<Integer, Integer> freq;
+        private int idx = 0;
+
+        public FreqStack() {
+            pq = new PriorityQueue<>();
+            freq = new HashMap<>();
+        }
+
+        public void push(int val) {
+            freq.put(val, freq.getOrDefault(val, 0) + 1);
+            pq.add(new pair(val, idx++, freq.get(val)));
+        }
+
+        public int pop() {
+            pair rp = pq.remove();
+            freq.put(rp.val, rp.freq - 1);
+            if (freq.get(rp.val) == 0)
+                freq.remove(rp.val);
+            return rp.val;
+        }
+
+        public int top() {
+            pair rp = pq.peek();
+            return rp.val;
+        }
+    }
+
+    // approach 2 using ArrayList and HashMap
+    class FreqStack_ {
+
+        private ArrayList<LinkedList<Integer>> freqMap;
+        private HashMap<Integer, Integer> map;
+        private int maxFreq = 0;
+
+        public FreqStack_() {
+            freqMap = new ArrayList<>();
+            map = new HashMap<>();
+
+            freqMap.add(new LinkedList<>());
+        }
+
+        public void push(int val) {
+            map.put(val, map.getOrDefault(val, 0) + 1);
+            maxFreq = Math.max(maxFreq, map.get(val));
+
+            if (maxFreq == freqMap.size())
+                freqMap.add(new LinkedList<>());
+
+            freqMap.get(map.get(val)).addFirst(val);
+        }
+
+        public int pop() {
+            int rv = freqMap.get(maxFreq).removeFirst();
+            if (freqMap.get(maxFreq).size() == 0) {
+                freqMap.remove(maxFreq--);
+            }
+
+            map.put(rv, map.get(rv) - 1);
+            if (map.get(rv) == 0)
+                map.remove(rv);
+
+            return rv;
+        }
+    }
+
+    // ====================================================LEETCODE
+    // 155======================================
+    class MinStack {
+        LinkedList<Long> st = new LinkedList<>();
+        long minSf = 0;
+
+        public MinStack() {
+
+        }
+
+        public void push(int val) {
+            long x = val;
+            if (st.size() == 0) {
+                st.addFirst(x);
+                minSf = x;
+                return;
+            }
+
+            if (x < minSf) {
+                st.addFirst(2 * x - minSf);
+                minSf = x;
+            } else {
+                st.addFirst(x);
+            }
+        }
+
+        public void pop() {
+            if (st.getFirst() < minSf) {
+                minSf = 2 * minSf - st.getFirst();
+            }
+
+            st.removeFirst();
+        }
+
+        public int top() {
+            if (st.getFirst() < minSf) {
+                return (int) minSf;
+            }
+
+            return (int) (long) st.getFirst();
+        }
+
+        public int getMin() {
+            return (int) minSf;
+        }
+    }
 }
