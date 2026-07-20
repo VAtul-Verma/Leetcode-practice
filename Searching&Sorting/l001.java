@@ -667,8 +667,39 @@ public class l001 {
         }
         return ans;
     }
+
     // =========================================LEETCODE
     // 300==============================================
+    public int insertPosition(ArrayList<Integer> list, int data) {
+        int n = list.size();
+        int si = 0;
+        int ei = n - 1;
+        while (si <= ei) {
+            int mid = si + (ei - si) / 2;
+            if (list.get(mid) <= data)
+                si = mid + 1;
+            else
+                ei = mid - 1;
+        }
+        int inserpos = si;
+        int lasIdx = si - 1;
+        return lasIdx >= 0 && list.get(lasIdx) == data ? lasIdx : inserpos;
+    }
+
+    public int lengthOfLIS(int[] nums) {
+        int n = nums.length;
+        if (n <= 1)
+            return n;
+        ArrayList<Integer> mylist = new ArrayList<>();
+        for (int ele : nums) {
+            int idx = insertPosition(mylist, ele);
+            if (idx == mylist.size())
+                mylist.add(ele);
+            else
+                mylist.set(idx, ele);
+        }
+        return mylist.size();
+    }
 
     public static void main(String[] args) {
 
