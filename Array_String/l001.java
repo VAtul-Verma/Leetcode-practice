@@ -856,6 +856,311 @@ public class l001 {
         return maxLen;
     }
 
+    // ================================LeetCode 487 and 1004 both are
+    // same=====================================
+    // Naive approach TC: O(N^2)
+    public int longestOnes(int[] nums, int k) {
+        int n = nums.length;
+        int maxlen = 0;
+        for (int i = 0; i < n; i++) {
+            int cnt = 0;
+            for (int j = i; j < n; j++) {
+                if (nums[j] == 0)
+                    cnt++;
+
+                if (cnt > k) {
+                    break;
+                }
+                maxlen = Math.max(maxlen, j - i + 1);
+            }
+
+        }
+
+        return maxlen;
+    }
+
+    // Better Approach TC: O(n)
+    public static int longestOnes_Better(int[] arr, int k) {
+        int si = 0, ei = 0, count = 0, maxLen = 0;
+        int n = arr.length;
+        while (ei < n) {
+            if (arr[ei] == 0)
+                count++;
+            ei++;
+            while (count > k) {
+                if (arr[si] == 0)
+                    count--;
+                si++;
+            }
+            maxLen = Math.max(maxLen, ei - si);
+        }
+
+        return maxLen;
+    }
+
+    // ===================================LEETCODE 974
+    // ===============================
+    // Naive Approach :O(N^2)
+    public int subarraysDivByK(int[] arr, int k) {
+        int n = arr.length;
+        int totalsubarraycount = 0;
+        for (int i = 0; i < n; i++) {
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += arr[j];
+                if (sum % k == 0)
+                    totalsubarraycount++;
+            }
+        }
+        return totalsubarraycount;
+    }
+
+    // better Approach : TC:O(n)
+    public int subarraysDivByK_Better(int[] arr, int k) {
+        int ei = 0, sum = 0, ans = 0, n = arr.length;
+        int[] rem = new int[k];
+        rem[0] = 1;
+        while (ei < n) {
+            sum += arr[ei];
+            ei++;
+            int r = (sum % k + k) % k;
+            ans += rem[r];
+            rem[r]++;
+
+        }
+        return ans;
+
+    }
+
+    // ======================================GFG Subarrays with equal 1s and
+    // 0s=============
+    // LINK:
+    // https://www.geeksforgeeks.org/problems/count-subarrays-with-equal-number-of-1s-and-0s-1587115620/1
+    // NAIVE APPROACH : O(N^2)
+    public int countSubarray(int[] arr) {
+        // code here
+        int n = arr.length;
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int cntone = 0;
+            int cntzero = 0;
+            for (int j = i; j < n; j++) {
+                if (arr[j] == 1)
+                    cntone++;
+                else if (arr[j] == 0)
+                    cntzero++;
+                if (cntone == cntzero) {
+                    ans++;
+                }
+            }
+        }
+        return ans;
+
+    }
+
+    // BETTER APPRAOCCH TC:O(N)
+    public int countSubarray_BETTTER(int[] arr) {
+        // code here
+        int n = arr.length;
+        HashMap<Integer, Integer> map = new HashMap<>();
+        map.put(0, 1);
+        int ei = 0, count = 0, sum = 0;
+        while (ei < n) {
+            int val = arr[ei++];
+            sum += val;
+            if (val == 0)
+                sum += -1;// if val==0 then replace it with -1 and add the -1 in sum
+            count += map.getOrDefault(sum, 0);// get from map
+            map.put(sum, map.getOrDefault(sum, 0) + 1); // increase the freq of hashMap by 1
+        }
+        return count;
+    }
+
+    // ==========================LEETCODE 524==============================
+    // NaIVE APPRAOCH :O(N^2)
+    public int findMaxLength(int[] arr) {
+        int n = arr.length;
+        int maxlen = 0;
+        for (int i = 0; i < n; i++) {
+            int cntzero = 0;
+            int cntone = 0;
+            for (int j = i; j < n; j++) {
+                if (arr[j] == 1) {
+                    cntone++;
+                } else {
+                    cntzero++;
+                }
+                if (cntone == cntzero) {
+                    maxlen = Math.max(maxlen, j - i + 1);
+                }
+            }
+        }
+        return maxlen;
+    }
+
+    // better appraoch using HashMap TC: O(N)
+    public int findMaxLength_better(int[] arr) {
+        int ei = 0;
+        int n = arr.length;
+        int len = 0;
+        int sum = 0;
+        HashMap<Integer, Integer> map = new HashMap<>();
+        map.put(0, -1);
+        while (ei < n) {
+            int val = arr[ei];
+            sum += val;
+            if (val == 0)
+                sum += -1;
+            map.putIfAbsent(sum, ei);// if not in map then put it
+            len = Math.max(len, ei - map.get(sum));
+            ei++;
+        }
+        return len;
+    }
+
+    // ============================LEETCODE 239=========================
+    // TC:O(nK)
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        int n = nums.length;
+        int[] ans = new int[n - k + 1];
+        for (int i = 0; i <= n - k; i++) {
+            int m = Integer.MIN_VALUE;
+            for (int j = i; j < i + k; j++) {
+                m = Math.max(nums[j], m);
+            }
+            ans[i] = m;
+        }
+        return ans;
+    }
+
+    // ===========LEETCODE 53========================
+    // Naive approach Tc: O(n2)
+    public int maxSubArray(int[] nums) {
+        int maxsum = -(int) 1e9;
+        int n = nums.length;
+        for (int i = 0; i < n; i++) {
+            int currsum = 0;
+            for (int j = i; j < n; j++) {
+                currsum += nums[j];
+                maxsum = Math.max(currsum, maxsum);
+            }
+        }
+        return maxsum;
+    }
+
+    // Better Appraoch TC: O(N);
+    public int maxSubArray_better(int[] arr) {
+        int curr = arr[0];
+        int maxsum = arr[0];
+        int n = arr.length;
+        for (int i = 1; i < n; i++) {
+            if (curr > 0)
+                curr += arr[i];
+            else {
+                curr = arr[i];
+            }
+            maxsum = Math.max(maxsum, curr);
+
+        }
+        return maxsum;
+    }
+
+    // =======================LEETCODE
+    // 1191===============================================
+    public int kConcatenationMaxSum(int[] arr, int k) {
+        int[] modified = new int[arr.length * k];
+
+        for (int i = 0; i < modified.length; i++) {
+            modified[i] = arr[i % arr.length];
+        }
+
+        long ans = maxSubArray_helper(modified);
+
+        return ans < 0 ? 0 : (int) (ans % 1000000007);
+    }
+
+    public long maxSubArray_helper(int[] arr) {
+        long curr = arr[0];
+        long maxSum = arr[0];
+
+        for (int i = 1; i < arr.length; i++) {
+            curr = Math.max(arr[i], curr + arr[i]);
+            maxSum = Math.max(maxSum, curr);
+        }
+
+        return maxSum;
+    }
+
+    // ================Better appraoch TC:O(N)
+    int mod = (int) 1e9 + 7;
+
+    public int kConcatenationMaxSum_Better(int[] arr, int k) {
+        long one = maxSubArray(arr, 1);
+        if (k == 1)
+            return (int) one;
+
+        long two = maxSubArray(arr, 2);
+
+        long totalSum = 0;
+        for (int x : arr)
+            totalSum += x;
+
+        if (totalSum > 0) {
+            long ans = (two + (k - 2) * totalSum) % mod;
+            return (int) ans;
+        } else {
+            return (int) (two % mod);
+        }
+    }
+
+    public int maxSubArray(int[] arr, int k) {
+        int n = arr.length;
+        long gsum = arr[0];
+        long currsum = arr[0];
+
+        for (int i = 1; i < n * k; i++) {
+            int ele = arr[i % n];
+            currsum = Math.max(ele, currsum + ele);
+            gsum = Math.max(gsum, currsum);
+        }
+
+        return (int) Math.max(gsum, 0);
+    }
+
+    // More_better_approach
+
+    public int kConcatenationMaxSum_2(int[] arr, int k) {
+        int kadansSum = maxSubArray_(arr, 1);
+        if (k == 1)
+            return kadansSum;
+        long prefixSum = 0, suffixSum = 0, maxPrefixSum = 0, maxSuffixSum = 0, arraySum = 0;
+        int n = arr.length;
+        for (int i = 0, j = n - 1; i < n; i++, j--) {
+            prefixSum += arr[i];
+            suffixSum += arr[j];
+            arraySum += arr[i];
+
+            maxPrefixSum = Math.max(maxPrefixSum, prefixSum);
+            maxSuffixSum = Math.max(maxSuffixSum, suffixSum);
+        }
+        arraySum = arraySum < 0 ? 0 : arraySum % mod;
+        return (int) Math.max(kadansSum, maxPrefixSum + maxSuffixSum + ((k - 2) * arraySum) % mod) % mod;
+    }
+
+    public int maxSubArray_(int[] arr, int k) {
+        int n = arr.length;
+        long gsum = arr[0];
+        long currsum = arr[0];
+
+        for (int i = 1; i < n * k; i++) {
+            int ele = arr[i % n];
+            currsum = Math.max(ele, currsum + ele);
+            gsum = Math.max(gsum, currsum);
+        }
+
+        return (int) Math.max(gsum, 0);
+    }
+
     public static void main(String args[]) {
         // int[] arr = { -12, 11, -13, -5, 6, -7, 5, -3, -6 };
         // Rearrange_withOrder(arr);
