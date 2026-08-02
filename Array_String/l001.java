@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -1159,6 +1160,155 @@ public class l001 {
         }
 
         return (int) Math.max(gsum, 0);
+    }
+
+    // =====================================GFG
+
+    public int maxRectSum(int mat[][]) {
+        // code here
+        int n = mat.length; // row
+        int m = mat[0].length; // col
+
+        int maxsum = -(int) 1e9;
+        for (int fixRow = 0; fixRow < n; fixRow++) {
+            int col_Prefix_Sum[] = new int[m];
+            for (int row = fixRow; row < n; row++) {
+                for (int col = 0; col < m; col++) {
+                    col_Prefix_Sum[col] += mat[row][col];
+
+                }
+                int sum = maxSubArray_new(col_Prefix_Sum);
+                maxsum = Math.max(maxsum, sum);
+            }
+        }
+        return maxsum;
+
+    }
+
+    public int maxSubArray_new(int[] arr) {
+        int n = arr.length;
+        long gsum = arr[0];
+        long currsum = arr[0];
+
+        for (int i = 1; i < n; i++) {
+            int ele = arr[i];
+            currsum = Math.max(ele, currsum + ele);
+            gsum = Math.max(gsum, currsum);
+        }
+
+        return (int) gsum;
+    }
+
+    // if we want to print matrix
+
+    public static int[] kadanesAlgoGenericSubarray(int[] arr) {
+        int gSum = -(int) 1e9, cSum = 0, gsi = 0, gei = 0, csi = 0;
+        for (int i = 0; i < arr.length; i++) {
+            int ele = arr[i];
+            cSum += ele;
+            if (ele >= cSum) {
+                cSum = ele;
+                csi = i;
+            }
+
+            if (cSum > gSum) {
+                gSum = cSum;
+                gsi = csi;
+                gei = i;
+            }
+        }
+
+        return new int[] { gSum, gsi, gei };
+    }
+
+    int maximumSumRectangle_02(int R, int C, int arr[][]) {
+        int n = R, m = C, maxSum = -(int) 1e9;
+        int[] colPrefixSum = new int[m];
+
+        int r1 = 0, c1 = 0, r2 = 0, c2 = 0;
+
+        for (int fixRow = 0; fixRow < n; fixRow++) {
+
+            Arrays.fill(colPrefixSum, 0);
+
+            for (int row = fixRow; row < n; row++) {
+                for (int col = 0; col < m; col++)
+                    colPrefixSum[col] += arr[row][col];
+
+                int[] res = kadanesAlgoGenericSubarray(colPrefixSum);
+                if (res[0] >= maxSum) {
+                    maxSum = res[0];
+                    r1 = fixRow;
+                    c1 = res[1];
+                    r2 = row;
+                    c2 = res[2];
+                }
+            }
+        }
+
+        for (int i = r1; i <= r2; i++) {
+            for (int j = c1; j <= c2; j++) {
+                System.out.print(arr[i][j] + " ");
+            }
+            System.out.println();
+        }
+
+        return maxSum;
+    }
+
+    // =============================leetcode
+    // 781=========================================
+    //
+    public int numRabbits(int[] answers) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        int n = answers.length;
+        int ans = 0;
+        for (int ele : answers) {
+            if (!map.containsKey(ele)) {
+                ans += ele + 1;
+                map.put(ele, 1);
+            } else {
+                map.put(ele, map.get(ele) + 1);
+            }
+
+            if (map.get(ele) == ele + 1)
+                map.remove(ele);
+        }
+        return ans;
+    }
+
+    // =======================================LEETCODE
+    // 1074==================================
+    // better approach = ===================
+    public int countSubarraysGivenTarget(int[] arr, int tar) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        map.put(0, 1);
+        int count = 0, sum = 0;
+        for (int ele : arr) {
+            sum += ele;
+            count += map.getOrDefault(sum - tar, 0);
+            map.put(sum, map.getOrDefault(sum, 0) + 1);
+        }
+
+        return count;
+    }
+
+    public int numSubmatrixSumTarget(int[][] arr, int tar) {
+        int n = arr.length, m = arr[0].length;
+        int count = 0;
+
+        for (int fixedRow = 0; fixedRow < n; fixedRow++) {
+
+            int[] prefixColArray = new int[m];
+            for (int row = fixedRow; row < n; row++) {
+                for (int col = 0; col < m; col++)
+                    prefixColArray[col] += arr[row][col];
+
+                count += countSubarraysGivenTarget(prefixColArray, tar);
+            }
+        }
+
+        return count;
     }
 
     public static void main(String args[]) {
