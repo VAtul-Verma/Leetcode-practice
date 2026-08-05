@@ -441,7 +441,7 @@ public class l001 {
 
     // ==================================leetcode
     // 445===========================================
-    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+    public ListNode addTwoNumbers_(ListNode l1, ListNode l2) {
         l1 = reverse_04(l1);
         l2 = reverse_04(l2);
         ListNode dummy = new ListNode(-1);
@@ -480,6 +480,228 @@ public class l001 {
             curr = frd;
         }
         return prev;
+
+    }
+
+    // ====================================GFG SUBTRACT Two
+    // number========================
+    // Link: https://www.geeksforgeeks.org/problems/subtraction-in-linked-list/1
+    static ListNode subLinkedList(ListNode l1, ListNode l2) {
+        // code here
+        if (isbigger(l1, l2) < 0) {
+            ListNode temp = l1;
+            l1 = l2;
+            l2 = temp;
+        }
+
+        l1 = reverse(l1);
+        l2 = reverse(l2);
+        // which one is large number;
+
+        ListNode c1 = l1;
+        ListNode c2 = l2;
+        int borrow = 0;
+        ListNode dummy = new ListNode(-1);
+        ListNode prev = dummy;
+        while (c1 != null || c2 != null) {
+            int d1 = (c1 != null ? c1.val : 0);
+            int d2 = (c2 != null ? c2.val : 0);
+            int val = borrow + (d1 - d2);
+            if (val < 0) {
+                val += 10;
+                borrow = -1;
+            } else {
+                borrow = 0;
+            }
+            ListNode temp = new ListNode(val);
+            prev.next = temp;
+            prev = temp;
+            if (c1 != null)
+                c1 = c1.next;
+            if (c2 != null)
+                c2 = c2.next;
+
+        }
+        // remove the starting zero's
+        l1 = reverse(l1);
+        l2 = reverse(l2);
+        ListNode head = dummy.next;
+        dummy.next = null;
+        head = reverse(head);
+        ListNode curr = head;
+        while (curr.next != null) {
+            if (curr.val != 0) {
+                break;
+            }
+            curr = curr.next;
+        }
+        return curr;
+
+    }
+
+    static ListNode reverse(ListNode head) {
+        if (head == null || head.next == null)
+            return head;
+        ListNode curr = head;
+        ListNode prev = null;
+        while (curr != null) {
+            ListNode fwd = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = fwd;
+        }
+        return prev;
+    }
+
+    static int len(ListNode head) {
+        if (head == null)
+            return 0;
+
+        ListNode curr = head;
+        int mylen = 0;
+        while (curr != null) {
+            mylen++;
+            curr = curr.next;
+        }
+        return mylen;
+    }
+
+    public static int isbigger(ListNode l1, ListNode l2) {
+        int len1 = len(l1), len2 = len(l2);
+        if (len1 == len2) {
+            ListNode curr1 = l1, curr2 = l2;
+            while (curr1 != null) {
+                if (curr1.val != curr2.val)
+                    return curr1.val - curr2.val;
+                curr1 = curr1.next;
+                curr2 = curr2.next;
+            }
+        }
+        return len1 - len2;
+
+    }
+
+    // =====================================LEETCODE 83=====================
+    // Navie appraoch TC:O(N) and SC: O(N)
+    public ListNode deleteDuplicates(ListNode head) {
+        if (head == null || head.next == null)
+            return head;
+        ArrayList<ListNode> arr = new ArrayList<>();
+        ListNode curr = head;
+        arr.add(curr);
+        while (curr != null) {
+            if (arr.get(arr.size() - 1).val != curr.val) {
+                arr.add(curr);
+            }
+            curr = curr.next;
+        }
+        ListNode dummy = new ListNode(-1);
+        ListNode prev = dummy;
+        for (int i = 0; i < arr.size(); i++) {
+            ListNode temp = new ListNode(arr.get(i).val);
+            prev.next = temp;
+            prev = temp;
+        }
+        return dummy.next;
+    }
+
+    // ==better approach ===
+    public ListNode deleteDuplicates_better(ListNode head) {
+        // Your code here
+        ListNode curr = head;
+        while (curr != null && curr.next != null) {
+            if (curr.val == curr.next.val) {
+                curr.next = curr.next.next;
+            } else {
+                curr = curr.next;
+            }
+        }
+        return head;
+    }
+
+    // ==================Leetcode 82======================================
+    // better approach
+    public ListNode deleteAllDuplicates(ListNode head) {
+        if (head == null || head.next == null)
+            return head;
+        ListNode dummy = new ListNode(-1);
+        ListNode prev = dummy, curr = head.next;
+        prev.next = head;
+        while (curr != null) {
+            boolean isSequence = false;
+            while (curr != null && prev.next.val == curr.val) {
+                isSequence = true;
+                curr = curr.next;
+            }
+            if (isSequence) {
+                prev.next = curr;
+            } else {
+                prev = prev.next;
+            }
+            if (curr != null)
+                curr = curr.next;
+        }
+        return dummy.next;
+
+    }
+
+    // ============================Leetcode
+    // 328==========================================
+    // better appraoch
+    public ListNode oddEvenList(ListNode head) {
+        if (head == null || head.next == null)
+            return head;
+        ListNode dummyEven = new ListNode(-1), evenprev = dummyEven;
+        ListNode dummyOdd = new ListNode(-1), oddprev = dummyOdd;
+        ListNode curr = head;
+        int index = 1;
+        while (curr != null) {
+            if (index % 2 == 1) {
+                oddprev.next = curr;
+                oddprev = oddprev.next;
+            } else {
+                evenprev.next = curr;
+                evenprev = evenprev.next;
+            }
+            index++;
+            curr = curr.next;
+
+        }
+        evenprev.next = null;
+        oddprev.next = dummyEven.next;
+        dummyEven.next = null;
+        return dummyOdd.next;
+    }
+
+    // ====================================GFG Segregate Evens and Odds in a Linked
+    // List=============
+    // Link:https://www.geeksforgeeks.org/problems/segregate-even-and-odd-nodes-in-a-linked-list5035/1
+    // same as the above quetion
+
+    static ListNode divide(ListNode head) {
+        // code here
+        if (head == null || head.next == null)
+            return head;
+        ListNode dummyEven = new ListNode(-1), evenprev = dummyEven;
+        ListNode dummyOdd = new ListNode(-1), oddprev = dummyOdd;
+        ListNode curr = head;
+        int index = 1;
+        while (curr != null) {
+            if (curr.val % 2 == 1) {
+                oddprev.next = curr;
+                oddprev = oddprev.next;
+            } else {
+                evenprev.next = curr;
+                evenprev = evenprev.next;
+            }
+            index++;
+            curr = curr.next;
+
+        }
+        oddprev.next = null;
+        evenprev.next = dummyOdd.next;
+        dummyOdd.next = null;
+        return dummyEven.next;
 
     }
 
