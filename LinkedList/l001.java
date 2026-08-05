@@ -1,6 +1,7 @@
 import java.lang.classfile.components.ClassPrinter.ListNode;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class l001 {
 
@@ -283,6 +284,202 @@ public class l001 {
         }
 
         return dummy.next;
+
+    }
+
+    // better appraoch
+    public ListNode mergeTwoLists_better(ListNode list1, ListNode list2) {
+        if (list1 == null || list2 == null)
+            return list1 == null ? list2 : list1;
+        ListNode c1 = list1;
+        ListNode c2 = list2;
+        ListNode dummy = new ListNode(-1);
+        ListNode prev = dummy;
+        while (c1 != null && c2 != null) {
+            if (c1.val < c2.val) {
+                prev.next = c1;
+                c1 = c1.next;
+            } else {
+                prev.next = c2;
+                c2 = c2.next;
+            }
+            prev = prev.next;
+
+        }
+        if (c1 != null)
+            prev.next = c1;
+        if (c2 != null)
+            prev.next = c2;
+        return dummy.next;
+    }
+
+    // ========================GFG Unflod a
+    // linkedlist========================================
+    // better approach
+    public void unflod(ListNode head) {
+        if (head == null)
+            return;
+        ListNode dummy = new ListNode(-1);
+        ListNode prev = dummy;
+        ListNode curr = head;
+        while (curr != null && curr.next != null) {
+            ListNode forward = curr.next.next;
+            prev.next = curr.next;
+            curr.next = forward;
+            prev = prev.next;
+            curr = forward;
+        }
+        ListNode newhead = dummy.next;
+        dummy.next = null;
+        prev.next = null;
+        newhead = reverseList(newhead);
+        // Find the last node of the first list means find the tail in the first list to
+        // connect it into second list
+        ListNode first = head;
+        while (first.next != null) {
+            first = first.next;
+        }
+
+        first.next = newhead;
+    }
+
+    // =================================LEETCODE 19
+    // ==================================
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        ListNode revHead = reverseList_helper02(head);
+
+        ListNode curr = revHead;
+        ListNode prev = null;
+
+        while (n > 1) {
+            prev = curr;
+            curr = curr.next;
+            n--;
+        }
+
+        // delete first node of reversed list
+        if (prev == null) {
+            revHead = revHead.next;
+        } else {
+            prev.next = curr.next;
+        }
+
+        return reverseList_helper03(revHead);
+
+    }
+
+    public ListNode reverseList_helper03(ListNode head) {
+        if (head == null)
+            return head;
+        ListNode prev = null;
+        ListNode curr = head;
+        while (curr != null) {
+            ListNode fast = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = fast;
+        }
+        return prev;
+    }
+
+    // better appraoch
+    public ListNode removeNthFromEnd_better(ListNode head, int n) {
+        if (head == null)
+            return head;
+        ListNode A = head, B = head;
+        while (n-- > 0) {
+            B = B.next;
+        }
+
+        // when the n==List length then we have to remove the head and new head =
+        // head.next
+        if (B == null) {
+            ListNode romvenode = head;
+            head = head.next;
+            romvenode.next = null;
+            return head;
+        }
+        while (B.next != null) {
+            A = A.next;
+            B = B.next;
+
+        }
+        // if(B==null){
+        // ListNode romvenode = head;
+        // head = head.next;
+        // romvenode.next = null;
+        // return head;
+        // }
+
+        ListNode romvenode = A.next;
+        A.next = romvenode.next;
+        romvenode.next = null;
+        return head;
+
+    }
+
+    // ===============================leetcode 2===================
+    // Better Approach
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        ListNode dummy = new ListNode(-1);
+        ListNode head = dummy, tail = dummy;
+        int carry = 0;
+        while (l1 != null || l2 != null || carry != 0) {
+            int d1 = l1 == null ? 0 : l1.val;
+            int d2 = l2 == null ? 0 : l2.val;
+            ListNode temp = new ListNode((d1 + d2 + carry) % 10);
+            tail.next = temp;
+            tail = temp;
+            carry = (d1 + d2 + carry) / 10;
+            if (l1 != null)
+                l1 = l1.next;
+            if (l2 != null)
+                l2 = l2.next;
+        }
+        return dummy.next;
+    }
+
+    // ==================================leetcode
+    // 445===========================================
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        l1 = reverse_04(l1);
+        l2 = reverse_04(l2);
+        ListNode dummy = new ListNode(-1);
+        ListNode prev = dummy, c1 = l1, c2 = l2;
+        int carry = 0;
+        while (c1 != null || c2 != null || carry != 0) {
+            int sum = carry + (c1 != null ? c1.val : 0) + (c2 != null ? c2.val : 0);
+            carry = (sum / 10);
+            prev.next = new ListNode(sum % 10);
+            prev = prev.next;
+            if (c1 != null)
+                c1 = c1.next;
+            if (c2 != null)
+                c2 = c2.next;
+        }
+        // make the list as given
+        l1 = reverse_04(l1);
+        l2 = reverse_04(l2);
+
+        ListNode head = dummy.next;
+        dummy.next = null;
+        // return the head after reverse
+        head = reverse_04(head);
+        return head;
+
+    }
+
+    public ListNode reverse_04(ListNode head) {
+        if (head == null || head.next == null)
+            return head;
+        ListNode curr = head, prev = null;
+        while (curr != null) {
+            ListNode frd = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = frd;
+        }
+        return prev;
 
     }
 
