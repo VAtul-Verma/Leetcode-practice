@@ -1,6 +1,8 @@
 import java.lang.classfile.components.ClassPrinter.ListNode;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public class l001 {
@@ -703,6 +705,332 @@ public class l001 {
         dummyOdd.next = null;
         return dummyEven.next;
 
+    }
+
+    // ===============================LEETCODE 148===================
+    // better appraoch TC:O(N)
+    public ListNode sortList(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode midNode = Findmid(head);
+        ListNode nhead = midNode.next;
+        midNode.next = null;
+        return mergeTwoLists_(sortList(head), sortList(nhead));
+    }
+
+    public ListNode Findmid(ListNode head) {
+        if (head == null || head.next == null)
+            return head;
+        ListNode slow = head;
+        ListNode fast = head;
+        while (fast.next != null && fast.next.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+
+        }
+        return slow;
+    }
+
+    public ListNode mergeTwoLists_(ListNode l1, ListNode l2) {
+        if (l1 == null || l2 == null)
+            return l1 == null ? l2 : l1;
+        ListNode dummy = new ListNode(-1);
+        ListNode prev = dummy;
+        ListNode c1 = l1, c2 = l2;
+        while (c1 != null && c2 != null) {
+            if (c1.val <= c2.val) {
+                prev.next = c1;
+                c1 = c1.next;
+            } else {
+                prev.next = c2;
+                c2 = c2.next;
+            }
+            prev = prev.next;
+        }
+        if (c1 != null) {
+            prev.next = c1;
+        } else {
+            prev.next = c2;
+        }
+        return dummy.next;
+    }
+
+    // =======================================Leetcode 23===========================
+    // Appraoch simple loop on lists and merge the prev list to current list
+    // TC: O(NK)
+    public ListNode mergeKLists(ListNode[] lists) {
+        ListNode ans = null;
+        for (ListNode list : lists) {
+            ans = mergeTwoLists__(ans, list);
+        }
+        return ans;
+    }
+
+    public ListNode mergeTwoLists__(ListNode l1, ListNode l2) {
+        if (l1 == null || l2 == null)
+            return l1 == null ? l2 : l1;
+        ListNode dummy = new ListNode(-1);
+        ListNode prev = dummy;
+        ListNode c1 = l1, c2 = l2;
+        while (c1 != null && c2 != null) {
+            if (c1.val <= c2.val) {
+                prev.next = c1;
+                c1 = c1.next;
+            } else {
+                prev.next = c2;
+                c2 = c2.next;
+            }
+            prev = prev.next;
+        }
+        if (c1 != null) {
+            prev.next = c1;
+        } else {
+            prev.next = c2;
+        }
+        return dummy.next;
+    }
+
+    // better appraoch using mergeSort
+    // TC:O(Nlogk)
+
+    public ListNode mergeKLists_better(ListNode[] lists) {
+        int n = lists.length;
+        return mergeKLists(lists, 0, n - 1);
+    }
+
+    public ListNode mergeKLists(ListNode[] lists, int si, int ei) {
+        if (si >= ei) {
+            return si > ei ? null : lists[si];
+        }
+        int mid = (si + ei) / 2;
+        return mergeTwoLists__(mergeKLists(lists, si, mid), mergeKLists(lists, mid + 1, ei));
+    }
+
+    // ===================================LEETCODE
+    // 25===============================================
+    ListNode th = null, tt = null;
+
+    private void addFirst(ListNode node) {
+        if (th == null)
+            th = tt = node;
+        else {
+            node.next = th;
+            th = node;
+        }
+    }
+
+    private int length(ListNode head) {
+        ListNode curr = head;
+        int ans = 0;
+        while (curr != null) {
+            curr = curr.next;
+            ans++;
+        }
+        return ans;
+    }
+
+    public ListNode reverseKGroup(ListNode head, int k) {
+        if (head == null || head.next == null || k == 1) {
+            return head;
+        }
+        int len = length(head);
+        ListNode ah = null, at = null, curr = head;
+        while (len >= k) {
+            int tempK = k;
+            while (tempK-- > 0) {
+                ListNode forw = curr.next;
+                curr.next = null;
+                addFirst(curr);
+                curr = forw;
+            }
+            if (ah == null) {
+                ah = th;
+                at = tt;
+            } else {
+                at.next = th;
+                at = tt;
+
+            }
+            th = tt = null;
+            len -= k;
+        }
+        at.next = curr;
+        return ah;
+    }
+
+    // ==========================LEETCODE
+    // 92===========================================
+    public ListNode reverseBetween(ListNode head, int n, int m) {
+        if (head == null || head.next == null || m == n)
+            return head;
+
+        ListNode curr = head;
+        ListNode prev = null;
+
+        int idx = 1;
+        while (idx < m) {
+            while (idx >= n && idx <= m) {
+                ListNode forw = curr.next;
+                curr.next = null;
+
+                addFirst(curr);
+
+                curr = forw;
+                idx++;
+            }
+
+            if (idx > n) {
+                tt.next = curr;
+                if (prev != null) {
+                    prev.next = th;
+                    return head;
+                }
+
+                return th;
+            }
+            idx++;
+            prev = curr;
+            curr = curr.next;
+        }
+
+        return head;
+    }
+
+    // ==================================LEETCODE
+    // 203======================================
+    public ListNode removeElements(ListNode head, int val) {
+        ListNode dummy = new ListNode(-1);
+        ListNode prev = dummy;
+        ListNode curr = head;
+        while (curr != null) {
+            if (curr.val == val) {
+                curr = curr.next;
+            } else {
+                prev.next = curr;
+                prev = curr;
+                curr = curr.next;
+            }
+        }
+        prev.next = curr;
+        return dummy.next;
+    }
+
+    // ============================================lEETCODE
+    // 817=============================
+    // TC: O(N)
+    public int numComponents(ListNode head, int[] nums) {
+        if (head == null || nums.length == 0)
+            return 0;
+        HashSet<Integer> set = new HashSet<>();
+        for (int ele : nums) {
+            set.add(ele);
+        }
+        ListNode curr = head;
+        int components = 0;
+        while (curr != null) {
+            // me present hu lekin mera agla node present nahi hoga to hi component banega
+            // chceck
+            if (set.contains(curr.val) && (curr.next == null || !set.contains(curr.next.val))) {
+                components++;
+            }
+            curr = curr.next;
+        }
+        return components;
+    }
+
+    // HW 1171 and 138
+
+    // =======================================LEETCODE 141
+    // ==========================================
+    // Naive approach TC: o(n) SC: O(N);
+    public boolean hasCycle(ListNode head) {
+        if (head == null || head.next == null)
+            return false;
+        HashMap<ListNode, Integer> map = new HashMap<>();
+        ListNode curr = head;
+        while (curr != null) {
+            if (map.containsKey(curr))
+                return true;
+            else
+                map.put(curr, map.getOrDefault(curr, 0) + 1);
+            curr = curr.next;
+        }
+        return false;
+    }
+
+    // better Approach
+    public boolean hasCycle_(ListNode head) {
+        if (head == null || head.next == null)
+            return false;
+        ListNode slow = head;
+        ListNode fast = head;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+            if (slow == fast)
+                return true;
+        }
+        return false;
+    }
+
+    // ================================lEETCODE 142===============================
+    // better approach
+    public ListNode detectCycle_II(ListNode head) {
+        if (head == null || head.next == null)
+            return null;
+        ListNode slow = head, fast = head;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+            if (slow == fast)
+                break;
+        }
+        if (slow != fast)
+            return null;
+        slow = head;
+        while (slow != fast) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        return slow;
+    }
+
+    // ========================================leetcode
+    // 160=============================
+    public ListNode detectCycle(ListNode head) {
+        if (head == null || head.next == null)
+            return null;
+        ListNode slow = head, fast = head;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+            if (slow == fast)
+                break;
+        }
+        if (slow != fast)
+            return null;
+        slow = head;
+        while (slow != fast) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        return slow;
+    }
+
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        if (headA == null || headB == null)
+            return null;
+        ListNode tailB = headB;
+        while (tailB.next != null) {
+            tailB = tailB.next;
+        }
+        // form the cycle;
+        tailB.next = headB;
+
+        ListNode ans = detectCycle(headA);
+        tailB.next = null;
+        return ans;
     }
 
     public static void main(String[] args) {
